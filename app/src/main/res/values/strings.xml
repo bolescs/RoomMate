@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">RoomMate</string>
+    <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">733479113496277</string>
+    <string name="fb_login_protocol_scheme">733479113496277</string>
+    <string name="my_profile">My Profile</string>
+    <string-array name="planets_array">
+        <item>My Profile</item>
+        <item>My Tasks</item>
+        <item>Logout</item>
+    </string-array>
+    <string-array name="names_array">
+        <item>Andrew</item>
+        <item>Cameron</item>
+        <item>Matt</item>
+        <item>Moe</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="logout">Logout</string>
+    <string name="new_task">Adding New Task</string>
+    <string name="title_text">Title of task</string>
+    <string name="enter_title">Enter title here</string>
+    <string name="for_who_text">Who is this task for?</string>
+    <string name="button_upload">Upload</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="empty_tasks">No tasks to show.</string>
+    <string name="big_push">Select tasks</string>
+    <string name="cancel">Cancel selection</string>
+    <string name="submit">Submit</string>
+</resources>

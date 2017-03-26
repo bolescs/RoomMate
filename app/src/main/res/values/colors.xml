@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1aa3ff</color>
+    <color name="colorPrimaryDark">#007acc</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="colorPrimaryLight">#b3e0ff</color>
+
+
+    <color name="black">#000000</color>
+
+    <color name="logout_red">#E20000</color>
+    <color name="logout_press">#FF8686</color>
+</resources>
