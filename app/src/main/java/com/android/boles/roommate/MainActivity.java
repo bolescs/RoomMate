@@ -1,8 +1,10 @@
 package com.android.boles.roommate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,10 +30,15 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "FacebookLogin";
+    private static final String FIRST_TIME_LOG_IN1 = "first_time_log_in";
 
 
     private LoginButton mLoginButton;
@@ -39,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private ProfileTracker mProfileTracker;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
+
+    public static String mPictureID;
+    public static String mFacebookName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mCallbackManager = CallbackManager.Factory.create();
         mLoginButton = (LoginButton) findViewById(R.id.login_button);
@@ -131,6 +143,11 @@ public class MainActivity extends AppCompatActivity {
         return accessToken != null;
     }
 
+    public void setUpGroup() {
+        final Intent i = new Intent(getApplicationContext(), WiFiActivity.class);
+
+    }
+
     public void showProfile() {
         final Intent i = new Intent(getApplicationContext(), ProfileActivity.class);
         if (Profile.getCurrentProfile() == null) {
@@ -138,8 +155,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
                     // profile2 is the new profile
-                    i.putExtra("name", profile2.getName());
-                    i.putExtra("profileID", profile2.getId());
+
+                    i.putExtra(ProfileActivity.ARG_FBOOK_NAME, profile2.getName());
+                    i.putExtra(ProfileActivity.ARG_FBOOK_PIC_ID, profile2.getId());
+                    mPictureID = profile2.getId();
+                    mFacebookName = profile2.getName();
                     mProfileTracker.stopTracking();
                 }
             };
@@ -148,8 +168,11 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             Profile profile = Profile.getCurrentProfile();
-            i.putExtra("name", profile.getName());
-            i.putExtra("profileID", profile.getId());
+
+            i.putExtra(ProfileActivity.ARG_FBOOK_NAME, profile.getName());
+            i.putExtra(ProfileActivity.ARG_FBOOK_PIC_ID, profile.getId());
+            mPictureID = profile.getId();
+            mFacebookName = profile.getName();
         }
 
         finish();

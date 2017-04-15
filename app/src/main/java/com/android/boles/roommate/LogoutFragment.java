@@ -2,12 +2,14 @@ package com.android.boles.roommate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.MainThread;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
@@ -19,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 
 public class LogoutFragment extends Fragment {
+
     private LoginButton mLogoutButton;
     private Button mLogout;
 
@@ -32,6 +35,7 @@ public class LogoutFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_logout, container, false);
         mLogout = (Button) rootView.findViewById(R.id.logout);
+
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

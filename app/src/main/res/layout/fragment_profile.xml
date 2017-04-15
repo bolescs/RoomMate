@@ -6,8 +6,8 @@
 
     <com.facebook.login.widget.ProfilePictureView
         android:id="@+id/profile_pic"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 
@@ -17,20 +17,6 @@
         android:layout_height="30dp"
         android:layout_below="@+id/profile_pic"
         android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/face_name"
-        android:layout_width="300dp"
-        android:layout_height="30dp"
-        android:layout_below="@+id/name_text_view"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/face_email"
-        android:layout_width="300dp"
-        android:layout_height="30dp"
-        android:layout_below="@+id/face_name"
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

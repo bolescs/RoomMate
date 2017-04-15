@@ -4,15 +4,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:id="@+id/tasks_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_marginTop="100dp"
+        android:indeterminateDrawable="@drawable/progress_bar_drawable"/>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/task_recycler_view"
-        android:padding="4dp"
+        android:paddingTop="8dp"
         android:scrollbars="vertical"
         android:scrollbarSize="5dp"
+        android:fadeScrollbars="true"
         android:scrollbarThumbVertical="@drawable/scrollbar_vertical"
-        android:visibility="visible" />
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"

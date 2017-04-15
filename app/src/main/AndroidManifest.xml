@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature android:name="android.hardware.wifi" />
 
@@ -35,6 +36,11 @@
             android:name=".ProfileActivity"
             android:label="@string/my_profile"
             android:parentActivityName=".ProfileActivity">
+        </activity>
+        <activity android:name=".TaskPagerActivity"
+            android:label="Tasks"
+            android:parentActivityName=".ProfileActivity">
+
         </activity>
         <activity
             android:name="com.facebook.CustomTabActivity"

@@ -3,18 +3,22 @@ package com.android.boles.roommate;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.Window;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.facebook.login.widget.ProfilePictureView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,14 +26,17 @@ import com.google.firebase.database.FirebaseDatabase;
  * Created by boles on 2/11/2017.
  */
 
-public class ProfileActivity extends AppCompatActivity
+public class ProfileActivity extends AppCompatActivity implements DrawerLock
 {
-    private String[] mPlanetTitles;
+    public static final String ARG_FBOOK_NAME = "fbook_name";
+    public static final String ARG_FBOOK_PIC_ID = "fbook_pic_id";
+    public static final String DIALOG_LOGOUT = "DialogLogout";
+    public static final String TASK_HEADER = "Task List";
+    public static final String PROFILE_HEADER = "My Profile";
+
     private DrawerLayout mDrawerLayout;
+    private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    private ListView mDrawerList;
     private String name;
     private String picID;
     private DatabaseReference mDatabase;
@@ -41,20 +48,85 @@ public class ProfileActivity extends AppCompatActivity
         setContentView(R.layout.activity_profile);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        setTitle(TASK_HEADER);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         fragmentManager = getSupportFragmentManager();
 
         Intent intent = getIntent();
-        name = intent.getStringExtra("name");
-        picID = intent.getStringExtra("profileID");
+        name = intent.getStringExtra(ARG_FBOOK_NAME);
+        picID = intent.getStringExtra(ARG_FBOOK_PIC_ID);
 
-        loadProfile();
+        loadTasks();
+        initNavDrawer();
+    }
 
-        mTitle = mDrawerTitle = getTitle();
+    //create the navigation drawer
+    public void initNavDrawer() {
+
+        final NavigationView navigationView = (NavigationView)findViewById(R.id.navigation_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+
+                switch (id){
+
+                    case R.id.tasks_drawer:
+                        PublicTasksFragment publicTasksFragment = (PublicTasksFragment) getSupportFragmentManager()
+                                .findFragmentByTag("TASKS_FRAGMENT");
+
+                        if (publicTasksFragment != null && publicTasksFragment.isVisible()) {
+                            mDrawerLayout.closeDrawers();
+                        } else {
+                            loadTasks();
+                        }
+                        setTitle(TASK_HEADER);
+                        mDrawerLayout.closeDrawers();
+                        navigationView.getMenu().getItem(0).setChecked(true);
+                        break;
+
+                    case R.id.logout_drawer:
+                        LogoutDialogFragment logout = new LogoutDialogFragment();
+                        logout.show(getSupportFragmentManager(), DIALOG_LOGOUT);
+                        break;
+
+                }
+                return true;
+            }
+        });
+
+        View header = navigationView.getHeaderView(0);
+        TextView nav_name = (TextView) header.findViewById(R.id.nav_profile_name);
+        nav_name.setText(name);
+        ProfilePictureView profilePic = (ProfilePictureView) header.findViewById(R.id.nav_profile_pic);
+        profilePic.setProfileId(picID);
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyProfileFragment myMyProfileFragment = (MyProfileFragment) getSupportFragmentManager()
+                        .findFragmentByTag("PROFILE_FRAGMENT");
+                if (myMyProfileFragment != null && myMyProfileFragment.isVisible()) {
+                    mDrawerLayout.closeDrawers();
+                } else {
+                    loadProfile();
+                    mDrawerLayout.closeDrawers();
+                }
+                setTitle(PROFILE_HEADER);
+                int size = navigationView.getMenu().size();
+                for (int i = 0; i < size; i++) {
+                    navigationView.getMenu().getItem(i).setChecked(false);
+                }
+            }
+        });
+
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        //mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.black);
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
@@ -69,23 +141,13 @@ public class ProfileActivity extends AppCompatActivity
             }
         };
 
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
-        //getActionBar().setHomeButtonEnabled(true);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        finish();
+        //finish();
     }
 
     @Override
@@ -97,9 +159,17 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        //menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawers();
+        } else if (fragmentManager.getBackStackEntryCount() == 0) {
+            finish();
+        }
     }
 
     @Override
@@ -127,68 +197,21 @@ public class ProfileActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
-    //private class for drawer
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
+    //load tasks fragment
+    public void loadTasks() {
+        Fragment fragment2 = new PublicTasksFragment();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment2, "TASKS_FRAGMENT")
+                .addToBackStack("myTaskFrag")
+                .commit();
     }
 
-    /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
-        // Create a new fragment and specify the fragment to show based on position
-        switch (position) {
-            case 0:
-                ProfileFragment myFragment = (ProfileFragment) getSupportFragmentManager()
-                        .findFragmentByTag("PROFILE_FRAGMENT");
-
-                if (myFragment != null && myFragment.isVisible()) {
-                    mDrawerLayout.closeDrawers();
-                } else  {
-                    loadProfile();
-                }
-                break;
-
-            case 1:
-                MyTasksFragment myTasksFragment = (MyTasksFragment) getSupportFragmentManager()
-                        .findFragmentByTag("TASKS_FRAGMENT");
-
-                if (myTasksFragment != null && myTasksFragment.isVisible()) {
-                    mDrawerLayout.closeDrawers();
-                } else {
-                    Fragment fragment2 = new MyTasksFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.content_frame, fragment2, "TASKS_FRAGMENT")
-                            .addToBackStack("myTaskFrag")
-                            .commit();
-                }
-                break;
-
-            case 2:
-                Fragment fragment4 = new LogoutFragment();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.content_frame, fragment4)
-                        .addToBackStack("logoutFrag")
-                        .commit();
-                break;
-
-            default:
-                break;
-        }
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
+    //load profile fragment
     public void loadProfile() {
-        Fragment fragment = new ProfileFragment();
+        Fragment fragment = new MyProfileFragment();
         Bundle args = new Bundle();
-        args.putString("name", name);
-        args.putString("picID", picID);
+        args.putString(MyProfileFragment.ARG_NAME, name);
+        args.putString(MyProfileFragment.ARG_PIC_ID, picID);
         fragment.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment, "PROFILE_FRAGMENT")
@@ -196,4 +219,12 @@ public class ProfileActivity extends AppCompatActivity
                 .commit();
     }
 
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        if (enabled) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+    }
 }

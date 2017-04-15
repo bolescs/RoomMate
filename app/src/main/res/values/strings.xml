@@ -17,15 +17,22 @@
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="group_title_text">Name of Group</string>
     <string name="logout">Logout</string>
     <string name="new_task">Adding New Task</string>
     <string name="title_text">Title of task</string>
     <string name="enter_title">Enter title here</string>
-    <string name="for_who_text">Who is this task for?</string>
+    <string name="task_value">Task level</string>
     <string name="button_upload">Upload</string>
     <string name="button_cancel">Cancel</string>
     <string name="empty_tasks">No tasks to show.</string>
     <string name="big_push">Select tasks</string>
-    <string name="cancel">Cancel selection</string>
+    <string name="cancel">Cancel</string>
     <string name="submit">Submit</string>
+
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_profile">My Profile</string>
+    <string name="nav_logout">Logout</string>
+    <string name="confirm_logout">Are you sure you want to logout?</string>
+
 </resources>
